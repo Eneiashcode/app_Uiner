@@ -11,7 +11,6 @@ export default defineConfig({
       manifest: {
         name: 'Uiner',
         short_name: 'Uiner',
-        description: 'App social esportivo para tênis',
         start_url: '/',
         display: 'standalone',
         background_color: '#ffffff',
