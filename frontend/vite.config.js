@@ -1,11 +1,17 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import path from 'path' // ✅ importa path para usar alias
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'), // ✅ alias para src
+    },
+  },
   build: {
     outDir: 'dist',
-    assetsDir: '.', // <- Coloca tudo na raiz do dist
+    assetsDir: '.', // mantém como você tinha
   },
   plugins: [
     react(),

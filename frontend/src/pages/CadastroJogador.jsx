@@ -1,11 +1,34 @@
+import { useState } from 'react'
+// 🔧 Corrigido aqui:
+import { auth, db } from '@/firebase.js'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { doc, setDoc } from 'firebase/firestore'
+
 export default function CadastroJogador({ irPara }) {
-  const handleSubmit = (e) => {
+  const [nome, setNome] = useState('')
+  const [sobrenome, setSobrenome] = useState('')
+  const [email, setEmail] = useState('')
+  const [senha, setSenha] = useState('')
+  const [erro, setErro] = useState('')
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
-    // Aqui no futuro vamos salvar no banco
-    console.log('Cadastro de jogador enviado')
+    try {
+      const userCred = await createUserWithEmailAndPassword(auth, email, senha)
 
-    irPara('login')
+      await setDoc(doc(db, 'usuarios', userCred.user.uid), {
+        tipo: 'jogador',
+        nome,
+        sobrenome,
+        email
+      })
+
+      irPara('login')
+    } catch (err) {
+      console.error('[ERRO FIREBASE]', err)
+      setErro(err.message) // <- mostra a mensagem real do Firebase
+    }
   }
 
   return (
@@ -19,27 +42,37 @@ export default function CadastroJogador({ irPara }) {
           <input
             type="text"
             placeholder="Nome"
-            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
             required
+            className="w-full px-4 py-3 border rounded-md"
           />
           <input
             type="text"
             placeholder="Sobrenome"
-            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            value={sobrenome}
+            onChange={(e) => setSobrenome(e.target.value)}
             required
+            className="w-full px-4 py-3 border rounded-md"
           />
           <input
             type="email"
             placeholder="E-mail"
-            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
+            className="w-full px-4 py-3 border rounded-md"
           />
           <input
             type="password"
             placeholder="Criar uma senha"
-            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
             required
+            className="w-full px-4 py-3 border rounded-md"
           />
+
+          {erro && <p className="text-red-500 text-sm">{erro}</p>}
 
           <button
             type="submit"
